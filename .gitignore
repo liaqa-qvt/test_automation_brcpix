@@ -1,0 +1,13 @@
+node_modules/
+.env
+playwright-report/
+test-results/
+.playwright/
+dist/
+*.js.map
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

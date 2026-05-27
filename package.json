@@ -1,0 +1,17 @@
+{
+  "name": "brcpix-tests",
+  "version": "1.0.0",
+  "description": "Automação Playwright — BRCPIX",
+  "scripts": {
+    "test": "playwright test",
+    "test:login": "playwright test login.spec.ts",
+    "test:cadastro": "playwright test cadastro.spec.ts",
+    "test:headed": "playwright test --headed",
+    "test:report": "playwright show-report",
+    "codegen": "playwright codegen https://brcpix.to/entrar"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^25.9.1"
+  }
+}
