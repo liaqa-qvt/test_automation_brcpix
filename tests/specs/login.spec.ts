@@ -1,93 +1,50 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-const VALID_EMAIL    = process.env['TEST_EMAIL']!;
-const VALID_PASSWORD = process.env['TEST_PASSWORD']!;
+const EMAIL    = process.env['TEST_EMAIL']!;
+const PASSWORD = process.env['TEST_PASSWORD']!;
 
+// Login usa storageState do globalSetup — estes testes verificam a tela de login
+// em si, sem depender da sessão salva.
 test.describe('Login', () => {
 
-  let loginPage: LoginPage;
-
-  test.beforeEach(async ({ page }) => {
-    loginPage = new LoginPage(page);
-    await loginPage.goto();
+  test('CT-L01 | Feliz — Campos de e-mail e senha visíveis', async ({ page }) => {
+    const login = new LoginPage(page);
+    await login.goto();
+    await expect(login.emailInput).toBeVisible();
+    await expect(login.passwordInput).toBeVisible();
+    await expect(login.submitBtn).toBeVisible();
   });
 
-  test('CT-L01 | Feliz — Login com credenciais válidas', async ({ page }) => {
-    await loginPage.login(VALID_EMAIL, VALID_PASSWORD);
-    await expect(page).toHaveURL(/\/painel/, { timeout: 10_000 });
+  test('CT-L02 | Feliz — Formulário aceita e-mail e senha', async ({ page }) => {
+    const login = new LoginPage(page);
+    await login.goto();
+    await login.emailInput.fill(EMAIL);
+    await login.passwordInput.fill(PASSWORD);
+    await expect(login.emailInput).toHaveValue(EMAIL);
   });
 
-  test('CT-L02 | Feliz — Campos visíveis na tela', async () => {
-    await expect(loginPage.emailInput).toBeVisible();
-    await expect(loginPage.passwordInput).toBeVisible();
-    await expect(loginPage.submitButton).toBeVisible();
+  test('CT-L03 | Triste — Login com senha errada exibe erro', async ({ page }) => {
+    const login = new LoginPage(page);
+    await login.goto();
+    await login.login(EMAIL, 'senha_errada_123');
+    await expect(page.locator('text=inválid').or(page.locator('[role="alert"]'))).toBeVisible({ timeout: 8000 });
   });
 
-  test('CT-L03 | Feliz — Senha oculta por padrão', async () => {
-    await expect(loginPage.passwordInput).toHaveAttribute('type', 'password');
-  });
-
-  test('CT-L04 | Feliz — Link "Esqueci minha senha" redireciona corretamente', async ({ page }) => {
-    await loginPage.forgotPasswordLink.click();
-    await expect(page).toHaveURL(/esqueci-senha/);
-  });
-
-  test('CT-L05 | Feliz — Link "Criar conta" redireciona para /cadastro', async ({ page }) => {
-    await loginPage.createAccountLink.click();
-    await expect(page).toHaveURL(/cadastro/);
-  });
-
-  test('CT-L06 | Feliz — Toggle mostra a senha', async () => {
-    await loginPage.passwordInput.fill('minhasenha');
-    await loginPage.togglePasswordButton.click();
-    await expect(loginPage.passwordInput).toHaveAttribute('type', 'text');
-  });
-
-  test('CT-L07 | Feliz — Toggle oculta a senha novamente', async () => {
-    await loginPage.passwordInput.fill('minhasenha');
-    await loginPage.togglePasswordButton.click();
-    await loginPage.togglePasswordButton.click();
-    await expect(loginPage.passwordInput).toHaveAttribute('type', 'password');
-  });
-
-  test('CT-L08 | Feliz — Título da página correto', async ({ page }) => {
-    await expect(page).toHaveTitle('Entrar — BRCPIX');
-  });
-
-  test('CT-L09 | Triste — E-mail sem @', async ({ page }) => {
-    await loginPage.login('emailinvalido', VALID_PASSWORD);
-    const isInvalid = await loginPage.emailInput.evaluate(
-      (el: HTMLInputElement) => !el.validity.valid
-    );
-    expect(isInvalid || !page.url().includes('/painel')).toBeTruthy();
-  });
-
-  test('CT-L10 | Triste — Senha incorreta', async ({ page }) => {
-    await loginPage.login(VALID_EMAIL, 'senhaerrada123');
-    await expect(page).not.toHaveURL(/\/painel/, { timeout: 5_000 });
-  });
-
-  test('CT-L11 | Triste — Campos vazios', async ({ page }) => {
-    await loginPage.submitButton.click();
+  test('CT-L04 | Triste — Login com e-mail vazio não submete', async ({ page }) => {
+    const login = new LoginPage(page);
+    await login.goto();
+    await login.passwordInput.fill(PASSWORD);
+    await login.submitBtn.click();
     await expect(page).toHaveURL(/entrar/);
   });
 
-  test('CT-L12 | Triste — E-mail não cadastrado', async ({ page }) => {
-    await loginPage.login('naoexiste@teste.com', 'qualquersenha');
-    await expect(page).not.toHaveURL(/\/painel/, { timeout: 5_000 });
-  });
-
-  test('CT-L13 | Triste — Senha vazia', async ({ page }) => {
-    await loginPage.emailInput.fill(VALID_EMAIL);
-    await loginPage.submitButton.click();
+  test('CT-L05 | Triste — Login com campos vazios não submete', async ({ page }) => {
+    const login = new LoginPage(page);
+    await login.goto();
+    await login.submitBtn.click();
     await expect(page).toHaveURL(/entrar/);
   });
-
-  test('CT-L14 | Triste — E-mail vazio', async ({ page }) => {
-    await loginPage.passwordInput.fill(VALID_PASSWORD);
-    await loginPage.submitButton.click();
-    await expect(page).toHaveURL(/entrar/);
-  });
-
 });

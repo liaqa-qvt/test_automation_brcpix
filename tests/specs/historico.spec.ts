@@ -1,57 +1,45 @@
 import { test, expect } from '@playwright/test';
-import { CobrancasPage } from '../pages/CobrancasPage';
+import { HistoricoPage } from '../pages/HistoricoPage';
 
-test.describe('Cobranças', () => {
+test.describe('Histórico de Transações', () => {
 
-  let cobrancas: CobrancasPage;
+  let pg: HistoricoPage;
 
   test.beforeEach(async ({ page }) => {
-    cobrancas = new CobrancasPage(page);
-    await cobrancas.goto();
+    pg = new HistoricoPage(page);
+    await pg.goto();
   });
 
-  test('CT-CB01 | Feliz — Título "Cobranças" visível', async () => {
-    await expect(cobrancas.titulo).toBeVisible();
+  test('CT-H01 | Feliz — Título "Transações" visível', async () => {
+    await expect(pg.titulo).toBeVisible();
   });
 
-  test('CT-CB02 | Feliz — Botão "Nova cobrança" visível', async () => {
-    await expect(cobrancas.btnNovaCobranca).toBeVisible();
+  test('CT-H02 | Feliz — Filtro "Todos" ativo por padrão', async () => {
+    await expect(pg.filtreTodos).toHaveAttribute('aria-pressed', 'true');
   });
 
-  test('CT-CB03 | Feliz — Filtro de Status visível com data-testid correto', async () => {
-    await expect(cobrancas.filtroStatus).toBeVisible();
+  test('CT-H03 | Feliz — Filtros Pendente, Concluído e Falhou visíveis', async () => {
+    await expect(pg.filtroPendente).toBeVisible();
+    await expect(pg.filtroConcluido).toBeVisible();
+    await expect(pg.filtroFalhou).toBeVisible();
   });
 
-  test('CT-CB04 | Feliz — Filtro de Período visível com data-testid correto', async () => {
-    await expect(cobrancas.filtroPeriodo).toBeVisible();
+  test('CT-H04 | Feliz — Tabela de transações visível', async () => {
+    await expect(pg.tabela).toBeVisible();
   });
 
-  test('CT-CB05 | Feliz — Tabela de cobranças visível', async () => {
-    await expect(cobrancas.tabela).toBeVisible();
+  test('CT-H05 | Feliz — Clicar "Concluído" ativa o botão', async () => {
+    await pg.filtroConcluido.click();
+    await expect(pg.filtroConcluido).toHaveAttribute('aria-pressed', 'true');
   });
 
-  test('CT-CB06 | Feliz — Paginação exibe contagem de registros', async () => {
-    await expect(cobrancas.infoPaginacao).toBeVisible();
+  test('CT-H06 | Feliz — Paginação visível', async () => {
+    await expect(pg.infoPaginacao).toBeVisible();
   });
 
-  test('CT-CB07 | Feliz — Clicar em "Nova cobrança" abre modal', async ({ page }) => {
-    await cobrancas.abrirNovaCobranca();
-    await expect(page.locator('text=Escolha a moeda').or(
-      page.locator('[role="dialog"]')
-    )).toBeVisible({ timeout: 5000 });
-  });
-
-  test('CT-CB08 | Feliz — Filtro Status abre menu ao clicar', async ({ page }) => {
-    await cobrancas.filtroStatus.click();
-    await expect(page.locator('[role="menu"]').or(
-      page.locator('[data-state="open"]')
-    )).toBeVisible({ timeout: 3000 });
-  });
-
-  test('CT-CB09 | Triste — Acesso sem autenticação redireciona para /entrar', async ({ page }) => {
-    await page.context().clearCookies();
-    await page.goto('/painel/cobrancas');
+  test('CT-H07 | Triste — Acesso sem auth redireciona para /entrar', async ({ page, context }) => {
+    await context.clearCookies();
+    await page.goto('/painel/transacoes');
     await expect(page).toHaveURL(/entrar/);
   });
-
 });
