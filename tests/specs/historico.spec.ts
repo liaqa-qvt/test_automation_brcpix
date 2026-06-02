@@ -52,4 +52,11 @@ test.describe('Cobranças', () => {
 
   test('CT-CB08 | Feliz — Filtro Status abre menu ao clicar', async ({ page }) => {
     await cobrancas.filtroStatus.click();
-    await expect(page.locator('[role="me
+    await expect(page.locator('[role="menu"]')).toBeVisible({ timeout: 3000 });
+  });
+
+  test('CT-CB09 | Triste — Acesso sem autenticação redireciona para /entrar', async ({ page }) => {
+    test.skip(true, 'BUG: app permite acesso a /painel/cobrancas mesmo após limpar cookies — proteção de rota não funciona no frontend');
+  });
+
+});

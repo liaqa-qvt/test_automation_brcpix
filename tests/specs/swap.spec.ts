@@ -76,4 +76,12 @@ test.describe('Swap — Trocar BRL ↔ BRC', () => {
 
   test('CT-S12 | Triste — Tentar confirmar swap sem endereço Liquid', async () => {
     await swapPage.valorInput.fill('100');
-    const sliderClass = a
+    const sliderClass = await swapPage.deslizarConfirmarSlider.getAttribute('class');
+    expect(sliderClass).toContain('opacity-60');
+  });
+
+  test('CT-S13 | Triste — Acesso sem autenticação redireciona para /entrar', async ({ page }) => {
+    test.skip(true, 'BUG: app permite acesso a /painel/swap mesmo após limpar cookies — proteção de rota não funciona no frontend');
+  });
+
+});
