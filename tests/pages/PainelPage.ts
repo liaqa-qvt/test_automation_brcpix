@@ -50,7 +50,7 @@ export class PainelPage {
     this.navEnviar        = page.locator('a[href="/painel/saques"]').first();
     this.navReceber       = page.locator('a[href="/painel/cobrancas"]').first();
     this.navHistorico     = page.locator('a[href="/painel/transacoes"]');
-    this.navCobrancas     = page.locator('nav a[href="/painel/cobrancas"]').last();
+    this.navCobrancas     = page.locator('aside a[href="/painel/cobrancas"]', { hasText: 'Cobranças' });
     this.navClientes      = page.locator('a[href="/painel/clientes"]');
     this.navCatalogo      = page.locator('a[href="/painel/catalog"]');
     this.navCheckout      = page.locator('a[href="/painel/checkout"]');

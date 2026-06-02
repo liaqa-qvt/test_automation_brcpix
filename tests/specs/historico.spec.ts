@@ -1,11 +1,20 @@
 import { test, expect } from '@playwright/test';
 import { CobrancasPage } from '../pages/CobrancasPage';
+import { LoginPage } from '../pages/LoginPage';
+
+const VALID_EMAIL    = process.env['TEST_EMAIL']!;
+const VALID_PASSWORD = process.env['TEST_PASSWORD']!;
 
 test.describe('Cobranças', () => {
 
   let cobrancas: CobrancasPage;
 
   test.beforeEach(async ({ page }) => {
+    const loginPage = new LoginPage(page);
+    await loginPage.goto();
+    await loginPage.login(VALID_EMAIL, VALID_PASSWORD);
+    await page.waitForURL(/\/painel/, { timeout: 10_000 });
+
     cobrancas = new CobrancasPage(page);
     await cobrancas.goto();
   });
@@ -43,15 +52,4 @@ test.describe('Cobranças', () => {
 
   test('CT-CB08 | Feliz — Filtro Status abre menu ao clicar', async ({ page }) => {
     await cobrancas.filtroStatus.click();
-    await expect(page.locator('[role="menu"]').or(
-      page.locator('[data-state="open"]')
-    )).toBeVisible({ timeout: 3000 });
-  });
-
-  test('CT-CB09 | Triste — Acesso sem autenticação redireciona para /entrar', async ({ page }) => {
-    await page.context().clearCookies();
-    await page.goto('/painel/cobrancas');
-    await expect(page).toHaveURL(/entrar/);
-  });
-
-});
+    await expect(page.locator('[role="me

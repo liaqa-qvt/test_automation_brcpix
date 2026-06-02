@@ -36,4 +36,22 @@ export class ClientesPage {
   async buscarCliente(termo: string) {
     await this.campoBusca.fill(termo);
   }
+
+  async adicionarCliente(dados: { nome: string; email: string; documento?: string }) {
+    await this.btnAdicionarCliente.click();
+    const dialog = this.page.locator('[role="dialog"]');
+    await dialog.waitFor({ timeout: 5000 });
+
+    await dialog.locator('input[name="name"], input[placeholder*="nome"], input[id*="name"]').first().fill(dados.nome);
+    await dialog.locator('input[name="email"], input[type="email"], input[placeholder*="email"]').first().fill(dados.email);
+
+    if (dados.documento) {
+      const docField = dialog.locator('input[name="document"], input[placeholder*="CPF"], input[placeholder*="CNPJ"]').first();
+      if (await docField.count() > 0) {
+        await docField.fill(dados.documento);
+      }
+    }
+
+    await dialog.locator('button[type="submit"]').click();
+  }
 }

@@ -22,7 +22,7 @@ export class SwapPage {
 
     this.inverterDirecaoBtn      = page.locator('button[aria-label="Inverter direção"]');
     this.deslizarConfirmarSlider = page.locator('[aria-label="Deslize para confirmar"]');
-    this.seletorMoedaBtn         = page.locator('button#radix-_r_a_');
+    this.seletorMoedaBtn         = page.locator('button', { hasText: 'BRC' }).first();
 
     this.tituloTrocar     = page.locator('h1', { hasText: 'Trocar' });
     this.labelMoedaOrigem = page.locator('span', { hasText: 'BRL' });

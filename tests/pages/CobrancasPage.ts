@@ -29,7 +29,7 @@ export class CobrancasPage {
     this.tabela      = page.locator('table');
     this.linhasTabela = page.locator('tbody tr');
 
-    this.infoPaginacao    = page.locator('[data-range]');
+    this.infoPaginacao    = page.locator('[data-range]').last();
     this.seletorPorPagina = page.locator('button[role="combobox"]').first();
   }
 

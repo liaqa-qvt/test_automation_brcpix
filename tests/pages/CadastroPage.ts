@@ -48,7 +48,13 @@ export class CadastroPage {
       await this.inviteCodeInput.fill(data.inviteCode);
     }
     if (data.acceptTerms !== false) {
-      await this.termsCheckbox.check();
+      await this.page.evaluate(() => {
+        const checkbox = document.querySelector('#reg-terms') as HTMLInputElement;
+        const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'checked')?.set;
+        setter?.call(checkbox, true);
+        checkbox.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+      });
     }
 
     await this.submitButton.click();

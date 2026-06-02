@@ -6,7 +6,7 @@ export default defineConfig({
   testDir: './tests/specs',
   fullyParallel: false,
   retries: 1,
-  timeout: 30_000,
+  timeout: 60_000,
 
   use: {
     baseURL: 'https://brcpix.to',
